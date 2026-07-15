@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f5f5f7">
+  <title>提醒事项</title>
+  <link rel="stylesheet" href="styles.css?v=8">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-top">
+        <button class="icon-button mobile-menu-close" id="close-sidebar" aria-label="关闭边栏">×</button>
+        <h1>提醒事项</h1>
+        <div class="dropdown-container">
+          <button class="more-button" id="sidebar-more" aria-label="更多选项">•••</button>
+          <div class="dropdown-menu" id="sidebar-dropdown" hidden>
+            <button class="dropdown-item" id="btn-search">🔍 搜索</button>
+            <button class="dropdown-item" id="btn-notifications">🔔 开启提醒</button>
+            <button class="dropdown-item" id="btn-show-completed">✓ 显示已完成</button>
+            <button class="dropdown-item" id="btn-about">ℹ 关于</button>
+          </div>
+        </div>
+      </div>
+
+      <nav class="smart-lists" aria-label="智能列表">
+        <button class="smart-card today-card active" data-view="today">
+          <span class="smart-icon calendar-icon"><strong id="today-date">14</strong></span>
+          <span class="smart-card-label">今天</span>
+          <span class="count" id="count-today">0</span>
+        </button>
+        <button class="smart-card scheduled-card" data-view="scheduled">
+          <span class="smart-icon">▣</span>
+          <span class="smart-card-label">已计划</span>
+          <span class="count" id="count-scheduled">0</span>
+        </button>
+        <button class="smart-card all-card" data-view="all">
+          <span class="smart-icon">☷</span>
+          <span class="smart-card-label">全部</span>
+          <span class="count" id="count-all">0</span>
+        </button>
+        <button class="smart-card flagged-card" data-view="flagged">
+          <span class="smart-icon">⚑</span>
+          <span class="smart-card-label">旗标</span>
+          <span class="count" id="count-flagged">0</span>
+        </button>
+        <button class="smart-card completed-card" data-view="completed">
+          <span class="smart-icon">✓</span>
+          <span class="smart-card-label">已完成</span>
+          <span class="count" id="count-completed">0</span>
+        </button>
+      </nav>
+
+      <div class="search-container" id="search-container" hidden>
+        <input type="text" id="search-input" class="search-input" placeholder="搜索提醒事项...">
+      </div>
+
+      <section class="my-lists" aria-labelledby="my-lists-heading">
+        <div class="section-heading">
+          <h2 id="my-lists-heading">我的列表</h2>
+          <button id="add-list" class="text-button">添加列表</button>
+        </div>
+        <div id="list-navigation" class="list-navigation"></div>
+      </section>
+
+      <button class="add-list-row" id="add-list-bottom"><span>＋</span> 添加列表</button>
+    </aside>
+
+    <main class="content">
+      <header class="content-header">
+        <button class="icon-button menu-button" id="open-sidebar" aria-label="打开边栏">☰</button>
+        <div>
+          <p class="eyebrow" id="view-subtitle">2026年7月14日，星期二</p>
+          <h2 id="view-title">今天</h2>
+        </div>
+        <div class="dropdown-container">
+          <button class="more-button content-more" id="content-more" aria-label="更多选项">•••</button>
+          <div class="dropdown-menu" id="content-dropdown" hidden>
+            <button class="dropdown-item" id="btn-sort-name">A-Z 按名称排序</button>
+            <button class="dropdown-item" id="btn-sort-date">📅 按日期排序</button>
+            <button class="dropdown-item" id="btn-sort-priority">! 按优先级排序</button>
+            <button class="dropdown-item" id="btn-toggle-completed">✓ 切换已完成显示</button>
+          </div>
+        </div>
+      </header>
+
+      <section class="task-area" aria-label="待办事项">
+        <div id="empty-state" class="empty-state" hidden>
+          <div class="empty-illustration">✓</div>
+          <h3>没有待办事项</h3>
+          <p>享受片刻轻松，或添加一项新提醒。</p>
+        </div>
+        <div id="task-groups" class="task-groups"></div>
+      </section>
+
+      <div class="new-reminder-bar">
+        <button id="add-task" class="add-task-button"><span>＋</span> 新建提醒事项</button>
+        <button id="quick-flag" class="icon-button flag-outline" aria-label="添加旗标提醒">⚑</button>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal-backdrop" id="task-modal" hidden>
+    <form class="modal-card task-modal-card" id="task-form">
+      <div class="modal-header">
+        <h2 id="task-modal-title">新建提醒事项</h2>
+        <button type="button" class="icon-button close-modal" data-close-modal="task-modal" aria-label="关闭">×</button>
+      </div>
+      <label class="field-label" for="task-title">标题</label>
+      <input id="task-title" name="title" class="task-title-input" type="text" placeholder="提醒事项" required maxlength="100">
+      <label class="field-label" for="task-notes">备注</label>
+      <textarea id="task-notes" name="notes" rows="3" placeholder="添加备注"></textarea>
+      <div class="form-grid">
+        <label>日期<input id="task-date" name="date" type="date"></label>
+        <label>时间<input id="task-time" name="time" type="time"></label>
+      </div>
+      <div class="form-grid" style="margin-top:0">
+        <label>优先级
+          <select id="task-priority" name="priority">
+            <option value="none">无</option>
+            <option value="high">高</option>
+            <option value="medium">中</option>
+            <option value="low">低</option>
+          </select>
+        </label>
+        <label></label>
+      </div>
+      <label class="flag-setting"><input id="task-flagged" name="flagged" type="checkbox"> <span>添加旗标</span></label>
+      <div class="form-grid" style="margin-top:15px">
+        <label>列表
+          <select id="task-list" name="list">
+          </select>
+        </label>
+        <label>重复
+          <select id="task-repeat" name="repeat">
+            <option value="none">不重复</option>
+            <option value="daily">每天</option>
+            <option value="weekly">每周</option>
+            <option value="monthly">每月</option>
+            <option value="yearly">每年</option>
+            <option value="weekday">工作日</option>
+            <option value="lunar">农历</option>
+          </select>
+        </label>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="button-secondary" id="task-delete-btn" hidden>删除</button>
+        <button type="button" class="button-secondary" data-close-modal="task-modal">取消</button>
+        <button type="submit" class="button-primary">完成</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="modal-backdrop" id="list-modal" hidden>
+    <form class="modal-card list-modal-card" id="list-form">
+      <div class="modal-header">
+        <h2>新建列表</h2>
+        <button type="button" class="icon-button close-modal" data-close-modal="list-modal" aria-label="关闭">×</button>
+      </div>
+      <div class="list-icon-preview" id="list-icon-preview">☰</div>
+      <label class="field-label" for="list-name">列表名称</label>
+      <input id="list-name" name="name" type="text" placeholder="列表" required maxlength="40">
+      <label class="field-label" for="list-color">颜色</label>
+      <select id="list-color" name="color">
+        <option value="#ff453a">红色</option>
+        <option value="#ff9f0a">橙色</option>
+        <option value="#ffd60a">黄色</option>
+        <option value="#30d158">绿色</option>
+        <option value="#0a84ff" selected>蓝色</option>
+        <option value="#bf5af2">紫色</option>
+      </select>
+      <div class="modal-actions">
+        <button type="button" class="button-secondary" data-close-modal="list-modal">取消</button>
+        <button type="submit" class="button-primary">添加</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="modal-backdrop" id="about-modal" hidden>
+    <div class="modal-card about-modal-card">
+      <div class="modal-header">
+        <h2>关于提醒事项</h2>
+        <button type="button" class="icon-button close-modal" data-close-modal="about-modal" aria-label="关闭">×</button>
+      </div>
+      <div class="about-content">
+        <div class="about-icon">📝</div>
+        <h3>提醒事项 DEMO</h3>
+        <p>参考苹果「提醒事项」风格设计的网页版待办应用</p>
+        <div class="about-stats">
+          <div class="stat-item">
+            <div class="stat-value" id="about-total">0</div>
+            <div class="stat-label">总待办数</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="about-completed">0</div>
+            <div class="stat-label">已完成</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="about-lists">0</div>
+            <div class="stat-label">列表数</div>
+          </div>
+        </div>
+        <p class="about-hint">数据保存在浏览器本地，刷新后不会丢失。</p>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="button-primary" data-close-modal="about-modal">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js?v=9"></script>
+</body>
+</html>
